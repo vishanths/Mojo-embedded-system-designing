@@ -1,0 +1,79 @@
+// Function to find the length of the Longest Increasing Subsequence (LIS)
+fn longest_increasing_subsequence_length(nums: &[i32]) -> usize {
+    let n = nums.len();
+    if n == 0 {
+        return 0;
+    }
+
+    // Create a vector to store the lengths of LIS ending at each index
+    let mut dp = vec![1; n];
+
+    // Compute the length of LIS for each element
+    for i in 1..n {
+        for j in 0..i {
+            if nums[j] < nums[i] {
+                dp[i] = dp[i].max(dp[j] + 1);
+            }
+        }
+    }
+
+    // Return the maximum value in dp, which represents the length of the longest increasing subsequence
+    *dp.iter().max().unwrap_or(&1)
+}
+
+// Function to find the Longest Increasing Subsequence (LIS)
+fn longest_increasing_subsequence(nums: &[i32]) -> Vec<i32> {
+    let n = nums.len();
+    if n == 0 {
+        return vec![];
+    }
+
+    // Create a vector to store the indices of the LIS elements
+    let mut dp_indices = vec![0; n];
+    // Create a vector to store the LIS sequence
+    let mut lis = Vec::new();
+
+    // Initialize variables for tracking the LIS
+    let mut lis_length = 0;
+    let mut lis_end_index = 0;
+
+    // Compute the indices of the LIS elements
+    for i in 0..n {
+        let mut low = 0;
+        let mut high = lis_length;
+
+        while low < high {
+            let mid = (low + high) / 2;
+            if nums[dp_indices[mid]] < nums[i] {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+
+        dp_indices[low] = i;
+        if low == lis_length {
+            lis_length += 1;
+            lis_end_index = i;
+        }
+    }
+
+    // Construct the LIS sequence from dp_indices
+    for i in (0..=lis_length - 1).rev() {
+        lis.push(nums[dp_indices[i]]);
+    }
+
+    lis
+}
+
+fn main() {
+    let nums = vec![10, 22, 9, 33, 21, 50, 41, 60, 80];
+
+    // Calculate the length of the Longest Increasing Subsequence (LIS)
+    let lis_length = longest_increasing_subsequence_length(&nums);
+    println!("Length of Longest Increasing Subsequence: {}", lis_length);
+
+    // Find the Longest Increasing Subsequence (LIS) itself
+    let lis = longest_increasing_subsequence(&nums);
+    println!("Longest Increasing Subsequence: {:?}", lis);
+}
